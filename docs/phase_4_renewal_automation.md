@@ -11,26 +11,26 @@ Create an agentic workflow that structures lease renewal offers, balancing prope
 * `Median_Rent`: Local zip code median by unit type.
 
 ## 3. Insights & Functional Outcomes
-* **Insights Required:** Determine if a property's proposed 5% rent increase is justified by local CPI data or if it risks tenant churn because local market medians have dropped.
-* **Functional Outcome:** Dynamically generated text templates that explain the renewal increase mathematically and empathetically to secure a "Promise to Pay" or "Intent to Renew."
+* **Insights Required:** Determine if a proposed rent increase is justified by local CPI data or if it risks tenant churn.
+* **Functional Outcome:** Dynamically generated text templates that explain the renewal increase mathematically and empathetically.
 
 ## 4. Agentic Workflow Implementation Steps
-1.  **Market Ingestion:** `pandas` processes the time-series CPI and Zumper data.
-2.  **Contextual Prompt Generation:** Claude 4.6 Sonnet takes the base rent, the proposed increase, and the local market context to generate 3 different styles of renewal emails (Direct, Empathetic, Value-Add).
-3.  **A/B Test Logging:** W&B Weave is used to track the generation prompts. (In a real environment, this tracks conversion; here, it tracks generation quality).
-4.  **Template Engine:** The final selected prompt output is passed through `jinja2` to create a strictly formatted email/SMS template string.
+1.  **Market Ingestion:** Process time-series CPI data and store it in PostgreSQL using standard date/time indexing (or TimescaleDB extension if scale requires).
+2.  **Contextual Prompt Generation:** Gemini 3.1 Flash-Lite uses the time-series trends pulled via SQL to generate 3 different styles of renewal emails.
+3.  **A/B Test Logging:** W&B Weave tracks the generation prompts and variants. 
+4.  **Template Engine:** The selected prompt output is passed through `jinja2` to create a strictly formatted string.
 
 ## 5. Tooling & Libraries
-* **Data Analysis:** `pandas`, `statsmodels` (for simple trend analysis).
+* **Data Analysis:** `pandas`, `sqlalchemy`.
 * **Templating:** `jinja2`.
-* **Observability:** `weave` (Weights & Biases).
-* **LLM:** `anthropic`.
+* **Observability:** `weave`.
+* **LLM:** `google-genai` SDK (Gemini 3.1 Flash-Lite).
 
 ## 6. Architecture Diagram
 ```mermaid
 graph TD
-    A[BLS/Zumper Market Data] --> B[Pandas Trend Analysis]
-    B --> C[Claude Code: Renewal Strategist]
+    A[BLS/Zumper Market Data] --> B[PostgreSQL Time-Series Tables]
+    B --> C[Gemini 3.1 Flash-Lite: Renewal Strategist]
     C --> D[Generate Multi-Variant Copy]
     D --> E[W&B Weave Evaluation Tracker]
     E --> F{Select Optimal Tone}
